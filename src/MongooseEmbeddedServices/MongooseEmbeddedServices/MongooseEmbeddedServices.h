@@ -41,7 +41,7 @@ public:
         }
     }
 
-    static void ev_handler(struct mg_connection* nc, int ev, void* ev_data) {
+    static void ev_handler(struct mg_connection* nc, int ev, void* ev_data MG_UD_ARG(void* user_data)) {
         switch (ev) {
         case MG_EV_TIMER: {
             double now = *(double*)ev_data;
@@ -91,7 +91,7 @@ public:
 
         mg_mgr_init(&mgr, NULL);
 
-        nc = mg_bind(&mgr, s_http_port, ev_handler);
+        nc = mg_bind(&mgr, s_http_port, ev_handler MG_UD_ARG(NULL));
         mg_set_protocol_http_websocket(nc);
         s_http_server_opts.document_root = ".";  // Serve current directory
         s_http_server_opts.enable_directory_listing = "yes";  

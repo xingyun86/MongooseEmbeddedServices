@@ -8,3 +8,4 @@ project ("MongooseEmbeddedServices")
 # Include sub-projects.
 add_subdirectory ("vendor/mongoose")
 add_subdirectory ("MongooseEmbeddedServices")
+add_subdirectory ("ResourceServices")
