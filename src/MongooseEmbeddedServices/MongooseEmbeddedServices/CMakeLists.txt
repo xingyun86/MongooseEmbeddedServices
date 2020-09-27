@@ -20,7 +20,7 @@ add_executable (${project_name} ${SRCS})
 
 if (MSVC)
 	list(APPEND project_name_cflags /W4)
-	list(APPEND project_name_defines WIN32_LEAN_AND_MEAN _WIN32_WINNT=0x0501 -DMG_ENABLE_FILESYSTEM=1)
+	list(APPEND project_name_defines WIN32_LEAN_AND_MEAN _WIN32_WINNT=0x0501)
 	MESSAGE(STATUS "CMAKE_BUILD_TYPE=" ${CMAKE_BUILD_TYPE})
 
 	set(CompilerFlags
