@@ -41,11 +41,22 @@ public:
         }
     }
 
+    void reply(struct mg_connection* nc, const struct mg_str msg) {
+        char buf[500];
+        char addr[32];
+        mg_sock_addr_to_str(&nc->sa, addr, sizeof(addr),
+            MG_SOCK_STRINGIFY_IP | MG_SOCK_STRINGIFY_PORT);
+
+        snprintf(buf, sizeof(buf), "%s %.*s", addr, (int)msg.len, msg.p);
+        printf("%s\n", buf); /* Local echo. */
+        /* Reply send to the sender. */
+        mg_send_websocket_frame(nc, WEBSOCKET_OP_TEXT, buf, strlen(buf));
+    }
     static void ev_handler(struct mg_connection* nc, int ev, void* ev_data MG_UD_ARG(void* user_data)) {
         switch (ev) {
         case MG_EV_TIMER: {
             double now = *(double*)ev_data;
-            double next = mg_set_timer(nc, 0) + 1.0;
+            double next = mg_time() + 1.5;
             printf("timer event, current time: %.2lf\n", now);
             /* New websocket message. Tell everybody. */
             std::string t = std::to_string(time(0));
@@ -64,6 +75,7 @@ public:
             /* New websocket message. Tell everybody. */
             struct mg_str d = { (char*)wm->data, wm->size };
             MES->broadcast(nc, d);
+            MES->reply(nc, d);
             break;
         }
         case MG_EV_HTTP_REQUEST: {
@@ -96,8 +108,8 @@ public:
         s_http_server_opts.document_root = ".";  // Serve current directory
         s_http_server_opts.enable_directory_listing = "yes";  
         
-        // Send us MG_EV_TIMER event after 2.5 seconds
-        mg_set_timer(nc, mg_time() + 1);
+        // Send us MG_EV_TIMER event after 1.5 seconds
+        mg_set_timer(nc, mg_time() + 1.5);
 
         printf("Started on port %s\n", s_http_port);
         while (s_signal_received == 0) {
